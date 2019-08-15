@@ -15,7 +15,8 @@ def build_assets():
 
     output = os.listdir(config['check_scripts_dir'])
     asset_list = os.listdir(config['asset_defs_dir'])
-
+    log.info("Beginning asset build...")
+    
     try:
         output.remove('.DS_Store')
     except ValueError:
@@ -23,7 +24,8 @@ def build_assets():
 
     if not os.path.exists(config['asset_files_dir']):
         os.mkdir(config['asset_files_dir'])
-        log.debug(output)
+        log.debug("Check scripts ls: "+output)
+        log.debug("Asset definitions ls: "+asset_list)
     for item in output:
         asset_hash = ''
         basename = os.path.basename(item)
@@ -31,15 +33,12 @@ def build_assets():
         archive_name = basename+".tar"
         archive_path = os.path.join(config['asset_files_dir'], archive_name)
         archive_file = open(archive_path, 'w')
-        tarproc = subprocess.Popen(["tar", "--mtime", "'1970-01-01 00:00:00'", "--owner", "root", "-cv", "-C", basepath, 'bin'], stdout=archive_file)
+        tarproc = subprocess.Popen(["tar", "--mtime", "'1970-01-01 00:00:00'", "--owner", "root", "-c", "-C", basepath, 'bin'], stdout=archive_file)
         tarproc.wait()
         archive_file.close()
-        log.debug(basename)
-        log.debug("This should be empty:")
-        log.debug(asset_hash)
+        log.debug("basename: "+basename)
         asset_hash = hashlib.sha512(open(archive_path,'rb').read()).hexdigest()
-        log.debug("This should have a correct hash:")
-        log.debug(asset_hash)
+        log.debug("asset hash: "+asset_hash)
         log.debug("archive_path = {}".format(archive_path))
         asset_definition_file = os.path.join(config['asset_defs_dir'], basename+".json")
         log.info(asset_definition_file)

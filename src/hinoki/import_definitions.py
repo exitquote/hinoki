@@ -11,8 +11,6 @@ from hinoki.assets import build_assets
 
 def import_defs():
 
-	asset_list = build_assets()
-
 	check_defs=True
 	asset_defs=True
 	filter_defs=True
@@ -26,6 +24,10 @@ def import_defs():
 	sensu_connect.api_auth()
 
 	# sync asset definitions
+
+	## if definitions already exist in the folder, these can just be caught with the main case
+	## otherwise if we're building, we need to make sure that we build first and that this step
+	## succeeds before moving on.
 
 	if asset_list:
 		for file in asset_list:
@@ -50,6 +52,7 @@ def import_defs():
 			if import_succeeded:
 				log.info("All "+item_name+" definitions succesfully imported.")
 		except KeyError:
+			log.debug("No directory key for api item "+item_name)
 			pass
 
 	if (assets and asset_defs and check_defs):
@@ -64,3 +67,10 @@ def import_defs():
 		if not check_defs:
 			log.error("API sync for check definitions failed.")
 		exit(1)
+
+def import_assets():
+	build_assets()
+
+def import_all():
+	import_assets()
+	import_defs()

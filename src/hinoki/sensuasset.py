@@ -20,5 +20,5 @@ def sync_assets(assets_destination=config['assets_destination'], asset_files_dir
         log.error("rsync failed!")
         log.error(e)
         return False
-    log.info("Successfully synched assets to destination folder.")
+    log.info("rsync of assets to destination folder succeeded.")
     return True
